@@ -10,7 +10,7 @@ from sqlalchemy import *
 
 
 class ApiGenerator:
-"""Class used to generate code for API on the fly"""
+    """Class used to generate code for API on the fly"""
     def begin(self, tab="\t"):
         self.code = []
         self.tab = tab
