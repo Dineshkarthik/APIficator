@@ -1,0 +1,9 @@
+# IPython Notebook checkpoints
+.ipynb_checkpoints
+*.ipynb
+
+# Ignore all DBs
+*.db
+
+# Ignore all log
+*.log
