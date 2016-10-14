@@ -1,3 +1,4 @@
+"""Tornado App to Generate Rest API for existing Database."""
 import sys
 import string
 import yaml
@@ -8,8 +9,8 @@ import json
 from sqlalchemy import *
 
 
-class CodeGeneratorBackend:
-
+class ApiGenerator:
+"""Class used to generate code for API on the fly"""
     def begin(self, tab="\t"):
         self.code = []
         self.tab = tab
@@ -44,7 +45,7 @@ with open('conf.yaml', 'r') as f:
 db = create_engine(conf["DB"], echo=False)
 connection = db.connect()
 
-c = CodeGeneratorBackend()
+c = ApiGenerator()
 c.begin(tab="    ")
 
 ar = []
