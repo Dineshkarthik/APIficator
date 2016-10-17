@@ -4,11 +4,9 @@ API:
   user:
     url: /
     query: "select * from users;"
-    class: UserDetails
     method: get
 
   place:
     url: /place
     query: "select * from place;"
-    class: PlaceDetails
     method: get

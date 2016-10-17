@@ -7,10 +7,14 @@ import tornado.ioloop
 import tornado.web
 import json
 from sqlalchemy import *
+import psycopg2
+import MySQLdb
+import pyodbc
 
 
 class ApiGenerator:
     """Class used to generate code for API on the fly"""
+
     def begin(self, tab="\t"):
         self.code = []
         self.tab = tab
@@ -50,8 +54,7 @@ c.begin(tab="    ")
 
 ar = []
 for key in conf["API"]:
-    c.write("class " + conf["API"][key]["class"] +
-            "(tornado.web.RequestHandler):\n")
+    c.write("class " + key + "Details" + "(tornado.web.RequestHandler):\n")
     c.indent()
     c.write("def " + conf["API"][key]["method"] + "(self):\n")
     c.indent()
@@ -59,14 +62,13 @@ for key in conf["API"]:
     c.write(
         """self.set_header("Content-Type", 'application/json; charset="utf-8"')\n""")
     c.write("self.write(json.dumps([(dict(row.items())) for row in rs]))\n\n")
-    ar.append('(r"' + conf["API"][key]["url"] + '", ' + conf["API"][key][
-        "class"] + ')')
+    ar.append('(r"' + conf["API"][key]["url"] + '", ' + key + 'Details)')
     c.dedent()
     c.dedent()
 c.newline(no=2)
 c.write("application = tornado.web.Application([" + ','.join(ar) + "])")
-exec(c.end())
+exec (c.end())
 
 if __name__ == "__main__":
-    application.listen(8000)
+    application.listen(8800)
     tornado.ioloop.IOLoop.instance().start()
