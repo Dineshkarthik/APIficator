@@ -5,7 +5,6 @@ Would you like to expose an existing database via REST API? Normally, you'd have
 `APIficator` does the coding part for you, you can generate API services without writing any code.
 
 ##### All you need to do:
-  - Enter the requirements in the YAML file
   - Run the python app
   - The app will generate and launch REST API service for you
  
@@ -36,36 +35,6 @@ Database Urls
 * Oracle - `oracle://user_name:password@127.0.0.1:1521/sidname`
 * Microsoft SQL Server - `mssql+pyodbc://user_name:password@mydsn`
 
-Configuring YAML
-------------------
-
-Open `conf.yaml` file, the basic structure is as follows
-```sh
-DB: sqlite:///mydatabase.db
-
-API:
-  user:
-    url: /
-    query: "select * from users;"
-    method: get
-
-  place:
-    url: /place
-    query: "select * from place;"
-    method: get
-```
-
-* `DB`: The DB Connection URl for your respective DB.
-* All the configurations related to APIs are defined under `API`.
-* `user`, `places` in the agove yaml is the seperator key which is user defined.
-* `url`: it is the URL in which the particular API service will the avilable.
-* `query`: the SQL query for which you need the result, the same will be served in the API.
-* `method`: get, post, patch, put, delete. Specify the method
-
-##### NOTE:
-> In the current version of APIficator only get and post methods are implemented without any arguments for filtering. These features will be added in the upcoming versions.
-
-
 ### Installation
 
 You need Python, its dependency packages,  Tornado, SQLAlchemy and pandas installed globally:
@@ -74,10 +43,35 @@ You need Python, its dependency packages,  Tornado, SQLAlchemy and pandas instal
 $ git clone https://github.com/Dineshkarthik/APIficator.git
 $ cd APIficator
 $ pip install -r requirements.txt
-$ python apificator.py
+$ python apificator.py [Database Url]
+
+Example:
+$ python apificator.py sqlite:///database_name.db
+```
+**You don't even need to specify what are the tables present in your database.** 
+ Just point at your database and let `APIficator` do all the heavy lifting
+
+Let's see the awesome filtering capability of APIficator:
+
+```sh
+> python apificator.py sqlite:///database_name.db
+* Running on http://127.0.0.1:8800/
+
+> curl GET "http://localhost:8800/users/1"
 ```
 
-> By default the application runs in the port `8800`. Can be accessed as `http://localhost:8800`
+```json
+...
+{
+    "UserId": 1,
+    "Name": "Bob",
+    "Age": 24,
+    "Gender": male
+}
+```
+##### NOTE:
+> In the current version of APIficator only generaters APIs for get method. API service for other REST methods will be added in the upcoming versions.
+
 
 License
 ----
