@@ -66,7 +66,7 @@ Let's see the awesome filtering capability of APIficator:
     "UserId": 1,
     "Name": "Bob",
     "Age": 24,
-    "Gender": male
+    "Gender": "Male"
 }
 ```
 ##### NOTE:
