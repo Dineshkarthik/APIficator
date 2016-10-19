@@ -48,11 +48,14 @@ $ python apificator.py [Database Url]
 Example:
 $ python apificator.py sqlite:///database_name.db
 ```
+
+### Filtering and Sorting
 **You don't even need to specify what are the tables present in your database.** 
  Just point at your database and let `APIficator` do all the heavy lifting
 
 Let's see the awesome filtering capability of APIficator:
 
+When filtering with ***Primary key*** add the primary key at the end of the URL as below:
 ```sh
 > python apificator.py sqlite:///database_name.db
 * Running on http://127.0.0.1:8800/
@@ -69,6 +72,25 @@ Let's see the awesome filtering capability of APIficator:
     "Gender": "Male"
 }
 ```
+
+When filtering with columns other then primary key of the table pass the values as params with `column name` as  param key, as below:
+```sh
+> python apificator.py sqlite:///database_name.db
+* Running on http://127.0.0.1:8800/
+
+> curl GET "http://localhost:8800/users/?Gender=Female&Name=Lynda"
+```
+
+```json
+...
+{
+    "UserId": 21,
+    "Name": "Lynda",
+    "Age": 43,
+    "Gender": "Female"
+}
+```
+
 ##### NOTE:
 > In the current version of APIficator only generaters APIs for get method. API service for other REST methods will be added in the upcoming versions.
 
