@@ -17,25 +17,31 @@ class ApiGenerator:
     """Class used to generate code for API on the fly."""
 
     def begin(self, tab="\t"):
+        """Beginig of the code."""
         self.code = []
         self.tab = tab
         self.level = 0
 
     def end(self):
+        """End of code."""
         return string.join(self.code, "")
 
     def write(self, string):
+        """Function to write code."""
         self.code.append(self.tab * self.level + string)
 
     def indent(self):
+        """Function to create indent in code block."""
         self.level = self.level + 1
 
     def dedent(self):
+        """Function to dedent in code block."""
         if self.level == 0:
             raise SyntaxError, "internal error in code generator"
         self.level = self.level - 1
 
     def newline(self, no=1):
+        """Function to add newline to code block."""
         res = ""
         i = 1
         while (i <= no):
@@ -72,7 +78,8 @@ def new_alchemy_encoder():
 db = create_engine(sys.argv[1], echo=False)
 Base = declarative_base()
 Base.metadata.reflect(db)
-session = create_session(bind=db)
+Session = sessionmaker(bind=db)
+session = Session()
 
 tables = db.table_names()
 ar = []
@@ -103,7 +110,7 @@ for t in tables:
     c.write("""a.append(" " + t + "." + k + "='" + v[0] + "'")\n""")
     c.dedent()
     c.write("""result = session.query(""" + t + """).filter(
-                    (','.join(a).replace(",", "AND"))).all()\n""")
+                    (','.join(a).replace(",", "AND"))).first()\n""")
     c.dedent()
     c.write("else:\n")
     c.indent()
@@ -118,15 +125,49 @@ for t in tables:
     c.write("""result = session.query(""" + t + """).all()\n""")
     c.dedent()
     c.dedent()
-    c.write("""self.set_header(
-                "Content-Type", 'application/json; charset="utf-8"')\n""")
-    c.write("""self.write(json.dumps(
-                result, cls=new_alchemy_encoder(), check_circular=False))""")
+    c.write("if result:\n")
+    c.indent()
+    c.write(
+        """self.set_header("Content-Type", 'application/json; charset="utf-8"')\n""")
+    c.write(
+        """self.write(json.dumps(result, cls=new_alchemy_encoder(), check_circular=False))\n""")
+    c.dedent()
+    c.write("else:\n")
+    c.indent()
+    c.write("self.set_status(404)\n")
+    c.write("""self.write("No results found")""")
     c.dedent()
     c.dedent()
     c.newline(no=2)
     ar.append('(r"/' + t + "/?" '", ' + t + 'Details)')
     ar.append('(r"/' + t + "/[a-zA-Z0-9]+" '", ' + t + 'Details)')
+    c.write("def post(self):\n")
+    c.indent()
+    c.write("args = self.request.arguments\n")
+    c.write("if args:\n")
+    c.indent()
+    c.write("cols = [column.key for column in page.__table__.columns]\n")
+    c.write("if set(args.keys()).issubset(set(cols)):\n")
+    c.indent()
+    c.write("_obj=" + t + "()\n")
+    c.write("for k, v in args.iteritems():\n")
+    c.indent()
+    c.write("setattr(_obj, k, v[0])\n")
+    c.dedent()
+    c.write("session.add(_obj)\n")
+    c.write("session.commit()\n")
+    c.write("""self.write("Success")\n""")
+    c.dedent()
+    c.write("else:\n")
+    c.indent()
+    c.write("self.set_status(500)\n")
+    c.write(
+        """self.write("Please check the column names passed as params.")""")
+    c.dedent()
+    c.dedent()
+    c.dedent()
+    c.dedent()
+    c.newline(no=2)
 c.write("application = tornado.web.Application([" + ','.join(ar) + "])")
 exec (c.end())
 

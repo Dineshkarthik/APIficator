@@ -91,8 +91,15 @@ When filtering with columns other then primary key of the table pass the values 
 }
 ```
 
+#### Adding Data:
+
+Adding data to a table is even easier, `column name` as  param key with values, as below:
+```sh
+> curl POST "http://localhost:8800/users/?Gender=Male&Name=Jack&Age=36"
+```
+
 ##### NOTE:
-> In the current version of APIficator only generaters APIs for get method. API service for other REST methods will be added in the upcoming versions.
+> In the current version of APIficator only generaters APIs for `get` & `post` method. API services for other REST methods will be added in the upcoming versions.
 
 
 License
